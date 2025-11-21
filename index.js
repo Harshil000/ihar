@@ -79,17 +79,19 @@ container.addEventListener('click', () => {
         // Update next image preview
         updateNextImage();
         
-        // Remove expanding class for instant reset
+        // Remove expanding class and disable all transitions
         nextImage.classList.remove('expanding');
+        nextImage.style.transition = 'none';
         
         // Instantly reset clip-path to 0 (no transition)
         nextImage.style.clipPath = `circle(0px at ${mouseX}px ${mouseY}px)`;
         
-        // Allow cursor tracking again and immediately show at current position
-        setTimeout(() => {
+        // Re-enable transition and show at current position
+        requestAnimationFrame(() => {
+            nextImage.style.transition = '';
             isAnimating = false;
             nextImage.style.clipPath = `circle(${revealSize / 2}px at ${mouseX}px ${mouseY}px)`;
-        }, 10);
+        });
     }, 800); // Match the transition duration
 });
 
