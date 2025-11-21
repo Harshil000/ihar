@@ -46,6 +46,12 @@ function updateNextImage() {
     nextImage.style.backgroundImage = `url('./public/${images[nextPosition].img}')`;
 }
 
+// Update previous image preview
+function updatePreviousImage() {
+    const prevPosition = (position - 1 + images.length) % images.length;
+    nextImage.style.backgroundImage = `url('./public/${images[prevPosition].img}')`;
+}
+
 // Mouse move handler
 container.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
@@ -53,11 +59,21 @@ container.addEventListener('mousemove', (e) => {
     
     // Only update cursor if not animating
     if (!isAnimating) {
+        const containerWidth = container.offsetWidth;
+        const isLeftHalf = mouseX < containerWidth / 2;
+        
         // Update cursor position
         revealCursor.style.left = mouseX + 'px';
         revealCursor.style.top = mouseY + 'px';
         
-        // Update clip-path to reveal next image at cursor position with heart shape
+        // Show previous image on left half, next image on right half
+        if (isLeftHalf) {
+            updatePreviousImage();
+        } else {
+            updateNextImage();
+        }
+        
+        // Update clip-path to reveal image at cursor position with heart shape
         nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, revealSize);
     }
 });
@@ -109,10 +125,14 @@ container.addEventListener('mouseenter', () => {
 });
 
 // Click to change image
-container.addEventListener('click', () => {
+container.addEventListener('click', (e) => {
     if (isAnimating) return; // Prevent multiple clicks during animation
     
     isAnimating = true; // Lock cursor tracking
+    
+    const containerWidth = container.offsetWidth;
+    const clickedX = e.clientX;
+    const isLeftHalf = clickedX < containerWidth / 2;
     
     // Calculate the maximum distance from cursor to any corner
     const maxDistance = Math.max(
@@ -125,6 +145,16 @@ container.addEventListener('click', () => {
     // Store the click position
     const clickX = mouseX;
     const clickY = mouseY;
+    
+    // Determine navigation direction based on click position
+    const navigateForward = !isLeftHalf;
+    
+    // Set the appropriate image before expansion
+    if (navigateForward) {
+        updateNextImage();
+    } else {
+        updatePreviousImage();
+    }
     
     // Add expanding class for slower transition
     nextImage.classList.add('expanding');
@@ -140,14 +170,25 @@ container.addEventListener('click', () => {
         
         // Then immediately swap the background images
         setTimeout(() => {
-            position++;
-            if(position === images.length) position = 0;
+            // Navigate forward or backward
+            if (navigateForward) {
+                position++;
+                if(position === images.length) position = 0;
+            } else {
+                position--;
+                if(position < 0) position = images.length - 1;
+            }
             
             // Update current image to what was revealed
             currentImage.style.backgroundImage = `url('./public/${images[position].img}')`;
             
-            // Update next image preview
-            updateNextImage();
+            // Update preview based on current mouse position
+            const currentIsLeftHalf = mouseX < containerWidth / 2;
+            if (currentIsLeftHalf) {
+                updatePreviousImage();
+            } else {
+                updateNextImage();
+            }
             
             // Remove expanding class and disable all transitions
             nextImage.classList.remove('expanding');
