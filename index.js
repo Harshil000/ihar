@@ -62,15 +62,50 @@ container.addEventListener('mousemove', (e) => {
     }
 });
 
-// Hide cursor when mouse leaves container
+// Hide cursor when mouse leaves container with cute shrinking animation
 container.addEventListener('mouseleave', () => {
-    nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, 0);
+    if (!isAnimating) {
+        // Gradually shrink the heart
+        let shrinkSize = revealSize;
+        const shrinkInterval = setInterval(() => {
+            shrinkSize -= revealSize / 15;
+            if (shrinkSize <= 0) {
+                shrinkSize = 0;
+                clearInterval(shrinkInterval);
+            }
+            nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, shrinkSize);
+        }, 20);
+    } else {
+        nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, 0);
+    }
     revealCursor.style.opacity = '0';
 });
 
-// Show cursor when mouse enters container
+// Show cursor when mouse enters container with cute spawning animation
 container.addEventListener('mouseenter', () => {
     revealCursor.style.opacity = '1';
+    
+    if (!isAnimating) {
+        revealCursor.classList.add('spawning');
+        nextImage.classList.add('spawning');
+        
+        // Gradually grow the heart from 0 to full size
+        let growthSize = 0;
+        const growthInterval = setInterval(() => {
+            growthSize += revealSize / 20;
+            if (growthSize >= revealSize) {
+                growthSize = revealSize;
+                clearInterval(growthInterval);
+                nextImage.classList.remove('spawning');
+                
+                // Remove spawning animation after it completes
+                setTimeout(() => {
+                    revealCursor.classList.remove('spawning');
+                }, 600);
+            }
+            nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, growthSize);
+        }, 30);
+    }
 });
 
 // Click to change image
@@ -121,11 +156,29 @@ container.addEventListener('click', () => {
             // Instantly reset clip-path to 0 (no transition)
             nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, 0);
             
-            // Re-enable transition and show at current position
+            // Re-enable transition with spawning animation
             requestAnimationFrame(() => {
                 nextImage.style.transition = '';
-                isAnimating = false;
-                nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, revealSize);
+                nextImage.classList.add('spawning');
+                revealCursor.classList.add('spawning');
+                
+                // Gradually grow the heart from 0 to full size
+                let growthSize = 0;
+                const growthInterval = setInterval(() => {
+                    growthSize += revealSize / 20;
+                    if (growthSize >= revealSize) {
+                        growthSize = revealSize;
+                        clearInterval(growthInterval);
+                        isAnimating = false;
+                        nextImage.classList.remove('spawning');
+                        
+                        // Remove spawning animation after it completes
+                        setTimeout(() => {
+                            revealCursor.classList.remove('spawning');
+                        }, 600);
+                    }
+                    nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, growthSize);
+                }, 30);
             });
         }, 50);
     }, 750); // Slightly before animation completes but after full coverage
