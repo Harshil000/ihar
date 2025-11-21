@@ -42,20 +42,37 @@ container.addEventListener('mouseenter', () => {
 
 // Click to change image
 container.addEventListener('click', () => {
-    position++;
-    if(position === images.length) position = 0;
+    // Calculate the maximum distance from cursor to any corner
+    const maxDistance = Math.max(
+        Math.hypot(mouseX, mouseY),
+        Math.hypot(window.innerWidth - mouseX, mouseY),
+        Math.hypot(mouseX, window.innerHeight - mouseY),
+        Math.hypot(window.innerWidth - mouseX, window.innerHeight - mouseY)
+    );
     
-    // Update current image
-    currentImage.style.backgroundImage = `url('./public/${images[position]}')`;
+    // Add expanding class for slower transition
+    nextImage.classList.add('expanding');
     
-    // Update next image preview
-    updateNextImage();
+    // Expand the reveal circle to cover entire screen
+    nextImage.style.clipPath = `circle(${maxDistance}px at ${mouseX}px ${mouseY}px)`;
     
-    // Reset clip-path and reapply at current mouse position
-    nextImage.style.clipPath = `circle(0px at ${mouseX}px ${mouseY}px)`;
+    // After animation completes, swap images
     setTimeout(() => {
+        position++;
+        if(position === images.length) position = 0;
+        
+        // Update current image to what was revealed
+        currentImage.style.backgroundImage = `url('./public/${images[position]}')`;
+        
+        // Update next image preview
+        updateNextImage();
+        
+        // Remove expanding class and reset to fast transition
+        nextImage.classList.remove('expanding');
+        
+        // Reset clip-path to small circle at cursor position
         nextImage.style.clipPath = `circle(${revealSize / 2}px at ${mouseX}px ${mouseY}px)`;
-    }, 50);
+    }, 800); // Match the transition duration
 });
 
 // Initialize

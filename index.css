@@ -46,6 +46,10 @@ main{
     transition: clip-path 0.1s ease;
 }
 
+.next-image.expanding {
+    transition: clip-path 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 .reveal-cursor {
     position: absolute;
     width: 200px;
