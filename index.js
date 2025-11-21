@@ -228,6 +228,72 @@ container.addEventListener('click', (e) => {
 // Initialize
 updateNextImage();
 
+// Songs Array
+const songs = [
+    { poster: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop", songName: "Moonlight Serenade" },
+    { poster: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop", songName: "Love in the Air" },
+    { poster: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop", songName: "Hearts Collide" },
+    { poster: "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=200&h=200&fit=crop", songName: "Dreamy Nights" },
+    { poster: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=200&h=200&fit=crop", songName: "Sunset Romance" },
+    { poster: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=200&h=200&fit=crop", songName: "Sweet Melody" },
+    { poster: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=200&h=200&fit=crop", songName: "Forever Yours" },
+    { poster: "https://images.unsplash.com/photo-1446057032654-9d8885db76c6?w=200&h=200&fit=crop", songName: "Starlight Kiss" },
+    { poster: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=200&h=200&fit=crop", songName: "Dancing in Rain" },
+    { poster: "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=200&h=200&fit=crop", songName: "Endless Love" }
+];
+
+// Music Menu Elements
+const musicDisc = document.getElementById('music-disc');
+const songMenu = document.getElementById('song-menu');
+const closeMenuBtn = document.getElementById('close-menu');
+const songList = document.getElementById('song-list');
+
+// Populate song list
+function populateSongList() {
+    songList.innerHTML = '';
+    songs.forEach((song, index) => {
+        const songItem = document.createElement('div');
+        songItem.className = 'song-item';
+        songItem.innerHTML = `
+            <img src="${song.poster}" alt="${song.songName}" class="song-poster">
+            <div class="song-name">${song.songName}</div>
+        `;
+        
+        songItem.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event from reaching image-container
+            console.log(`Selected: ${song.songName}`);
+            // Add your song play logic here
+            songMenu.classList.remove('show');
+            songMenu.classList.add('hidden');
+            setTimeout(() => {
+                musicDisc.classList.remove('menu-open');
+            }, 600);
+        });
+        
+        songList.appendChild(songItem);
+    });
+}
+
+// Toggle song menu
+musicDisc.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent event from reaching image-container
+    songMenu.classList.remove('hidden');
+    songMenu.classList.add('show');
+    musicDisc.classList.add('menu-open');
+});
+
+closeMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    songMenu.classList.remove('show');
+    songMenu.classList.add('hidden');
+    setTimeout(() => {
+        musicDisc.classList.remove('menu-open');
+    }, 600);
+});
+
+// Initialize song list
+populateSongList();
+
 // Romantic Overlay Logic
 const overlay = document.getElementById('romantic-overlay');
 const dateInput = document.getElementById('date-input');

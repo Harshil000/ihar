@@ -218,6 +218,298 @@ body , html{
 main{
     height: 100%;
     width: 100%;
+    position: relative;
+}
+
+/* Music Disc Button */
+.music-disc {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(255, 20, 147, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: discSpin 8s linear infinite;
+}
+
+.music-disc:hover {
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 40px rgba(255, 20, 147, 0.5),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
+    animation-play-state: paused;
+}
+
+.music-disc:active {
+    transform: scale(1.05);
+}
+
+.music-disc.menu-open {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.disc-icon {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.5));
+}
+
+/* Song Menu */
+.song-menu {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    box-shadow: 0 8px 32px rgba(255, 20, 147, 0.3);
+    z-index: 101;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.song-menu.show {
+    bottom: 30px;
+    right: 30px;
+    transform: none;
+    width: min(450px, 85vw);
+    height: 80vh;
+    max-height: 650px;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4),
+                0 0 100px rgba(255, 20, 147, 0.3);
+    pointer-events: all;
+}
+
+.song-menu.hidden {
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.song-menu-header {
+    padding: 25px 30px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.3s;
+}
+
+.song-menu.show .song-menu-header {
+    opacity: 1;
+}
+
+.song-menu-header h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.close-menu-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.song-list {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.3s;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - 85px);
+    max-height: calc(80vh - 85px);
+}
+
+/* Custom Scrollbar */
+.song-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.song-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.song-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, 
+        rgba(255, 105, 180, 0.8), 
+        rgba(255, 20, 147, 0.8));
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.song-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, 
+        rgba(255, 105, 180, 1), 
+        rgba(255, 20, 147, 1));
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+}
+
+.song-menu.show .song-list {
+    opacity: 1;
+}
+
+.song-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: 70px;
+}
+
+.song-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.song-item:hover::before {
+    left: 100%;
+}
+
+.song-item:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+    border-color: rgba(255, 105, 180, 0.5);
+}
+
+.song-item:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.song-poster {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.song-item:hover .song-poster {
+    transform: rotate(360deg);
+    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.6);
+    border-color: rgba(255, 105, 180, 0.8);
+}
+
+.song-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: white;
+    flex: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .song-menu.show {
+        width: 90vw;
+        height: 75vh;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .song-menu.hidden {
+        bottom: 20px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+    }
+    
+    .song-menu-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .song-list {
+        padding: 20px;
+    }
+    
+    .music-disc {
+        bottom: 20px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+    }
+    
+    .disc-icon {
+        font-size: 1.5rem;
+    }
+    
+    .song-item {
+        padding: 10px;
+    }
+    
+    .song-poster {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .song-name {
+        font-size: 0.95rem;
+    }
 }
 
 #image-container{
@@ -298,4 +590,13 @@ main{
 
 .reveal-cursor.spawning {
     animation: heartSpawn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes discSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
