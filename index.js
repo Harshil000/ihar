@@ -186,3 +186,58 @@ container.addEventListener('click', () => {
 
 // Initialize
 updateNextImage();
+
+// Romantic Overlay Logic
+const overlay = document.getElementById('romantic-overlay');
+const dateInput = document.getElementById('date-input');
+const submitBtn = document.getElementById('submit-btn');
+const errorMessage = document.getElementById('error-message');
+const correctDate = '07/04/2025';
+
+// Format date input automatically
+dateInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+    }
+    if (value.length >= 5) {
+        value = value.slice(0, 5) + '/' + value.slice(5, 9);
+    }
+    e.target.value = value;
+});
+
+// Handle Enter key
+dateInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        validateDate();
+    }
+});
+
+// Validate date
+function validateDate() {
+    const enteredDate = dateInput.value.trim();
+    
+    if (enteredDate === correctDate) {
+        errorMessage.style.color = '#32cd32';
+        errorMessage.textContent = '✨ Perfect! Unlocking our memories... 💕';
+        
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1000);
+        }, 1500);
+    } else if (enteredDate === '') {
+        errorMessage.style.color = '#ff1493';
+        errorMessage.textContent = 'Please enter a date ❤️';
+    } else {
+        errorMessage.style.color = '#ff1493';
+        errorMessage.textContent = '💔 Oops! That\'s not the right date. Try again!';
+        dateInput.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+            dateInput.style.animation = '';
+        }, 500);
+    }
+}
+
+submitBtn.addEventListener('click', validateDate);
