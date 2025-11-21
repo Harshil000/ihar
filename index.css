@@ -42,7 +42,7 @@ main{
 .next-image {
     z-index: 2;
     background-image: url("./public/image2.jpeg");
-    clip-path: circle(0px at 50% 50%);
+    clip-path: polygon(50% 50%, 50% 50%, 50% 50%);
     transition: clip-path 0.1s ease;
 }
 
@@ -55,9 +55,19 @@ main{
     width: 200px;
     height: 200px;
     border: none;
-    border-radius: 50%;
     pointer-events: none;
     z-index: 3;
     transform: translate(-50%, -50%);
     transition: transform 0.05s ease;
+    clip-path: polygon(
+        50% 15%,
+        61% 8%, 70% 5%, 80% 8%, 88% 15%,
+        93% 25%, 93% 35%, 90% 45%,
+        85% 55%, 78% 65%, 70% 75%,
+        60% 85%, 50% 95%,
+        40% 85%, 30% 75%, 22% 65%,
+        15% 55%, 10% 45%, 7% 35%,
+        7% 25%, 12% 15%, 20% 8%,
+        30% 5%, 39% 8%, 50% 15%
+    );
 }
