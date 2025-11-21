@@ -9,6 +9,7 @@ const revealCursor = document.querySelector('.reveal-cursor');
 const revealSize = 200; // Size of the reveal circle
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
+let isAnimating = false; // Lock flag to prevent cursor tracking during animation
 
 // Update next image preview
 function updateNextImage() {
@@ -21,12 +22,15 @@ container.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
     
-    // Update cursor position
-    revealCursor.style.left = mouseX + 'px';
-    revealCursor.style.top = mouseY + 'px';
-    
-    // Update clip-path to reveal next image at cursor position
-    nextImage.style.clipPath = `circle(${revealSize / 2}px at ${mouseX}px ${mouseY}px)`;
+    // Only update cursor if not animating
+    if (!isAnimating) {
+        // Update cursor position
+        revealCursor.style.left = mouseX + 'px';
+        revealCursor.style.top = mouseY + 'px';
+        
+        // Update clip-path to reveal next image at cursor position
+        nextImage.style.clipPath = `circle(${revealSize / 2}px at ${mouseX}px ${mouseY}px)`;
+    }
 });
 
 // Hide cursor when mouse leaves container
@@ -42,6 +46,10 @@ container.addEventListener('mouseenter', () => {
 
 // Click to change image
 container.addEventListener('click', () => {
+    if (isAnimating) return; // Prevent multiple clicks during animation
+    
+    isAnimating = true; // Lock cursor tracking
+    
     // Calculate the maximum distance from cursor to any corner
     const maxDistance = Math.max(
         Math.hypot(mouseX, mouseY),
@@ -50,11 +58,15 @@ container.addEventListener('click', () => {
         Math.hypot(window.innerWidth - mouseX, window.innerHeight - mouseY)
     );
     
+    // Store the click position
+    const clickX = mouseX;
+    const clickY = mouseY;
+    
     // Add expanding class for slower transition
     nextImage.classList.add('expanding');
     
     // Expand the reveal circle to cover entire screen
-    nextImage.style.clipPath = `circle(${maxDistance}px at ${mouseX}px ${mouseY}px)`;
+    nextImage.style.clipPath = `circle(${maxDistance}px at ${clickX}px ${clickY}px)`;
     
     // After animation completes, swap images
     setTimeout(() => {
@@ -67,11 +79,17 @@ container.addEventListener('click', () => {
         // Update next image preview
         updateNextImage();
         
-        // Remove expanding class and reset to fast transition
+        // Remove expanding class for instant reset
         nextImage.classList.remove('expanding');
         
-        // Reset clip-path to small circle at cursor position
-        nextImage.style.clipPath = `circle(${revealSize / 2}px at ${mouseX}px ${mouseY}px)`;
+        // Instantly reset clip-path to 0 (no transition)
+        nextImage.style.clipPath = `circle(0px at ${mouseX}px ${mouseY}px)`;
+        
+        // Allow cursor tracking again and immediately show at current position
+        setTimeout(() => {
+            isAnimating = false;
+            nextImage.style.clipPath = `circle(${revealSize / 2}px at ${mouseX}px ${mouseY}px)`;
+        }, 10);
     }, 800); // Match the transition duration
 });
 
