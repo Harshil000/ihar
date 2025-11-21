@@ -1,5 +1,5 @@
 let position = 0;
-let images = ["image1.png", "image2.jpeg", "image3.jpg"];
+let images = [{img : "image1.png"} , {img : "image2.jpeg"} , {img : "image3.jpg"}];
 
 const container = document.getElementById('image-container');
 const currentImage = document.querySelector('.current-image');
@@ -43,7 +43,7 @@ function getHeartClipPath(centerX, centerY, size) {
 // Update next image preview
 function updateNextImage() {
     const nextPosition = (position + 1) % images.length;
-    nextImage.style.backgroundImage = `url('./public/${images[nextPosition]}')`;
+    nextImage.style.backgroundImage = `url('./public/${images[nextPosition].img}')`;
 }
 
 // Mouse move handler
@@ -94,34 +94,41 @@ container.addEventListener('click', () => {
     // Add expanding class for slower transition
     nextImage.classList.add('expanding');
     
-    // Expand the reveal heart to cover entire screen
-    nextImage.style.clipPath = getHeartClipPath(clickX, clickY, maxDistance * 2.5);
+    // Use much larger scale to ensure heart covers entire screen including corners
+    // Heart needs bigger scale than circle due to its shape
+    nextImage.style.clipPath = getHeartClipPath(clickX, clickY, maxDistance * 4);
     
-    // After animation completes, swap images
+    // Wait longer to ensure full screen coverage before swapping
     setTimeout(() => {
-        position++;
-        if(position === images.length) position = 0;
+        // First make next image cover everything with no clip
+        nextImage.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
         
-        // Update current image to what was revealed
-        currentImage.style.backgroundImage = `url('./public/${images[position]}')`;
-        
-        // Update next image preview
-        updateNextImage();
-        
-        // Remove expanding class and disable all transitions
-        nextImage.classList.remove('expanding');
-        nextImage.style.transition = 'none';
-        
-        // Instantly reset clip-path to 0 (no transition)
-        nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, 0);
-        
-        // Re-enable transition and show at current position
-        requestAnimationFrame(() => {
-            nextImage.style.transition = '';
-            isAnimating = false;
-            nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, revealSize);
-        });
-    }, 800); // Match the transition duration
+        // Then immediately swap the background images
+        setTimeout(() => {
+            position++;
+            if(position === images.length) position = 0;
+            
+            // Update current image to what was revealed
+            currentImage.style.backgroundImage = `url('./public/${images[position].img}')`;
+            
+            // Update next image preview
+            updateNextImage();
+            
+            // Remove expanding class and disable all transitions
+            nextImage.classList.remove('expanding');
+            nextImage.style.transition = 'none';
+            
+            // Instantly reset clip-path to 0 (no transition)
+            nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, 0);
+            
+            // Re-enable transition and show at current position
+            requestAnimationFrame(() => {
+                nextImage.style.transition = '';
+                isAnimating = false;
+                nextImage.style.clipPath = getHeartClipPath(mouseX, mouseY, revealSize);
+            });
+        }, 50);
+    }, 750); // Slightly before animation completes but after full coverage
 });
 
 // Initialize
