@@ -100,10 +100,35 @@ let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
 let isAnimating = false; // Lock flag to prevent cursor tracking during animation
 
+// Preload cache for adjacent images
+const imageCache = new Map();
+const preloadQueue = new Set();
+
 // Helper function to check if file is a video
 function isVideo(filename) {
     const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
     return videoExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+}
+
+// Preload adjacent images for smoother experience
+function preloadAdjacentMedia(currentPos, range = 2) {
+    for (let i = -range; i <= range; i++) {
+        if (i === 0) continue;
+        const pos = (currentPos + i + images.length) % images.length;
+        const filename = images[pos].img;
+        const path = `./public/${filename}`;
+        
+        if (!imageCache.has(path) && !preloadQueue.has(path) && !isVideo(filename)) {
+            preloadQueue.add(path);
+            const img = new Image();
+            img.onload = () => {
+                imageCache.set(path, img);
+                preloadQueue.delete(path);
+            };
+            img.onerror = () => preloadQueue.delete(path);
+            img.src = path;
+        }
+    }
 }
 
 // Helper function to set media (image or video)
@@ -177,12 +202,14 @@ function getHeartClipPath(centerX, centerY, size) {
 function updateNextImage() {
     const nextPosition = (position + 1) % images.length;
     setMedia(nextImage, nextVideo, images[nextPosition].img);
+    preloadAdjacentMedia(position);
 }
 
 // Update previous image preview
 function updatePreviousImage() {
     const prevPosition = (position - 1 + images.length) % images.length;
     setMedia(nextImage, nextVideo, images[prevPosition].img);
+    preloadAdjacentMedia(position);
 }
 
 // Mouse move handler
@@ -361,6 +388,8 @@ container.addEventListener('click', (e) => {
 // Initialize
 setMedia(currentImage, currentVideo, images[position].img);
 updateNextImage();
+// Preload adjacent images on startup
+preloadAdjacentMedia(position);
 
 // Songs Array
 const songs = [

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./index.css">
+    <link rel="preload" as="image" href="./public/image1.jpg">
+    <link rel="preload" as="image" href="./poster/poster1.jpg">
     <title>Document</title>
 </head>
 <body>
@@ -31,12 +33,12 @@
     <main>
         <div id="image-container">
             <div class="image-layer current-image">
-                <video class="bg-video current-bg-video" loop muted playsinline style="display: none;"></video>
-                <video class="media-video current-video" loop muted playsinline style="display: none;"></video>
+                <video class="bg-video current-bg-video" loop muted playsinline preload="none" style="display: none;"></video>
+                <video class="media-video current-video" loop muted playsinline preload="none" style="display: none;"></video>
             </div>
             <div class="image-layer next-image">
-                <video class="bg-video next-bg-video" loop muted playsinline style="display: none;"></video>
-                <video class="media-video next-video" loop muted playsinline style="display: none;"></video>
+                <video class="bg-video next-bg-video" loop muted playsinline preload="none" style="display: none;"></video>
+                <video class="media-video next-video" loop muted playsinline preload="none" style="display: none;"></video>
             </div>
             <div class="reveal-cursor"></div>
             
