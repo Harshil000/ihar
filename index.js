@@ -230,16 +230,16 @@ updateNextImage();
 
 // Songs Array
 const songs = [
-    { poster: "./poster/poster1.jpg", songName: "Moonlight Serenade", audio: "./audio/audio1.m4a" },
-    { poster: "./poster/poster2.png", songName: "Love in the Air", audio: "./audio/audio2.m4a" },
-    { poster: "./poster/poster3.png", songName: "Hearts Collide", audio: "./audio/audio3.m4a" },
-    { poster: "./poster/poster4.png", songName: "Dreamy Nights", audio: "./audio/audio4.m4a" },
-    { poster: "./poster/poster5.png", songName: "Sunset Romance", audio: "./audio/audio5.m4a" },
-    { poster: "./poster/poster6.png", songName: "Sweet Melody", audio: "./audio/audio6.m4a" },
-    { poster: "./poster/poster7.png", songName: "Forever Yours", audio: "./audio/audio7.m4a" },
-    { poster: "./poster/poster8.jpg", songName: "Starlight Kiss", audio: "./audio/audio8.m4a" },
-    { poster: "./poster/poster9.jpg", songName: "Dancing in Rain", audio: "./audio/audio9.m4a" },
-    { poster: "./poster/poster10.jpg", songName: "Endless Love", audio: "./audio/audio10.m4a" }
+    { poster: "./poster/poster1.jpg", songName: "Tu Haiye Haali Aave", audio: "./audio/audio1.m4a" },
+    { poster: "./poster/poster2.png", songName: "Saavariya", audio: "./audio/audio2.m4a" },
+    { poster: "./poster/poster3.png", songName: "Vhalam aavo ne", audio: "./audio/audio3.m4a" },
+    { poster: "./poster/poster4.png", songName: "Mane Malje", audio: "./audio/audio4.m4a" },
+    { poster: "./poster/poster5.png", songName: "Mann Melo", audio: "./audio/audio5.m4a" },
+    { poster: "./poster/poster6.png", songName: "Darkhaast", audio: "./audio/audio6.m4a" },
+    { poster: "./poster/poster7.png", songName: "Ishq Hai", audio: "./audio/audio7.m4a" },
+    { poster: "./poster/poster8.jpg", songName: "Satranga", audio: "./audio/audio8.m4a" },
+    { poster: "./poster/poster9.jpg", songName: "Kaise Hua", audio: "./audio/audio9.m4a" },
+    { poster: "./poster/poster10.jpg", songName: "Kesariya", audio: "./audio/audio10.m4a" }
 ];
 
 // Music Menu Elements
@@ -253,6 +253,13 @@ const playPauseIcon = document.getElementById('play-pause-icon');
 const miniPlayer = document.querySelector('.mini-player');
 const miniPoster = document.getElementById('mini-poster');
 const miniSongName = document.getElementById('mini-song-name');
+const miniProgressBar = document.getElementById('mini-progress-bar');
+const miniPlayPauseBtn = document.getElementById('mini-play-pause');
+const progressBar = document.getElementById('progress-bar');
+const progressSlider = document.getElementById('progress-slider');
+const currentTimeDisplay = document.getElementById('current-time');
+const durationTimeDisplay = document.getElementById('duration-time');
+const currentSongTitle = document.getElementById('current-song-title');
 let currentSongIndex = 0;
 let isPlaying = false;
 
@@ -291,13 +298,24 @@ musicDisc.addEventListener('click', (e) => {
     songMenu.classList.add('show');
 });
 
-// Open song menu on mini player click
+// Open song menu on mini player info click
 miniPlayer.addEventListener('click', (e) => {
     e.stopPropagation();
+    
+    // Don't open if clicking play button
+    if (e.target.closest('.mini-control-btn')) {
+        return;
+    }
     
     // Open menu
     songMenu.classList.remove('hidden');
     songMenu.classList.add('show');
+});
+
+// Mini play/pause button
+miniPlayPauseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    togglePlayPause();
 });
 
 closeMenuBtn.addEventListener('click', (e) => {
@@ -315,6 +333,9 @@ function playSong(index) {
     discPoster.src = song.poster;
     miniPoster.src = song.poster;
     miniSongName.textContent = song.songName;
+    if (currentSongTitle) {
+        currentSongTitle.textContent = song.songName;
+    }
     
     audioPlayer.play().then(() => {
         isPlaying = true;
@@ -354,6 +375,15 @@ function updatePlayPauseIcons(icon) {
     if (playPauseBtn) {
         playPauseBtn.textContent = icon;
     }
+    if (miniPlayPauseBtn) {
+        miniPlayPauseBtn.textContent = icon;
+    }
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 function playNextSong() {
@@ -402,6 +432,42 @@ nextBtn.addEventListener('click', (e) => {
     playNextSong();
 });
 
+// Progress tracking
+audioPlayer.addEventListener('timeupdate', () => {
+    if (audioPlayer.duration) {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        
+        if (progressBar) {
+            progressBar.style.width = progress + '%';
+        }
+        if (progressSlider) {
+            progressSlider.value = progress;
+        }
+        if (miniProgressBar) {
+            miniProgressBar.style.width = progress + '%';
+        }
+        if (currentTimeDisplay) {
+            currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
+        }
+    }
+});
+
+// Duration loaded
+audioPlayer.addEventListener('loadedmetadata', () => {
+    if (durationTimeDisplay) {
+        durationTimeDisplay.textContent = formatTime(audioPlayer.duration);
+    }
+});
+
+// Seek functionality
+if (progressSlider) {
+    progressSlider.addEventListener('input', (e) => {
+        e.stopPropagation();
+        const seekTime = (progressSlider.value / 100) * audioPlayer.duration;
+        audioPlayer.currentTime = seekTime;
+    });
+}
+
 // Initialize song list
 populateSongList();
 
@@ -412,6 +478,9 @@ audioPlayer.src = songs[randomIndex].audio;
 discPoster.src = songs[randomIndex].poster;
 miniPoster.src = songs[randomIndex].poster;
 miniSongName.textContent = songs[randomIndex].songName;
+if (currentSongTitle) {
+    currentSongTitle.textContent = songs[randomIndex].songName;
+}
 updateActiveSong();
 
 // Auto-play on first user interaction with the page

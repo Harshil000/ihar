@@ -49,13 +49,31 @@
                 <img id="mini-poster" class="mini-poster" src="./poster/poster1.jpg" alt="Now Playing">
                 <div class="mini-info">
                     <div id="mini-song-name" class="mini-song-name">Select a Song</div>
+                    <div class="mini-progress-container">
+                        <div id="mini-progress-bar" class="mini-progress-bar"></div>
+                    </div>
                 </div>
+                <button id="mini-play-pause" class="mini-control-btn">▶️</button>
             </div>
+
+            <!-- Audio Player -->
+            <audio id="audio-player" preload="metadata"></audio>
             
             <!-- Full Menu Content (visible when menu is open) -->
             <div class="menu-content">
                 <div class="song-menu-header">
                     <h2>🎶 Music Player</h2>
+                    <div class="now-playing-info">
+                        <div id="current-song-title" class="current-song-title">Select a Song</div>
+                        <div class="progress-container">
+                            <span id="current-time" class="time-display">0:00</span>
+                            <div class="progress-bar-container">
+                                <div id="progress-bar" class="progress-bar"></div>
+                                <input type="range" id="progress-slider" class="progress-slider" min="0" max="100" value="0">
+                            </div>
+                            <span id="duration-time" class="time-display">0:00</span>
+                        </div>
+                    </div>
                     <div class="music-controls">
                         <button id="prev-btn" class="control-btn">⏮️</button>
                         <button id="play-pause-btn" class="control-btn play-pause-btn">▶️</button>
@@ -66,8 +84,6 @@
                 <div id="song-list" class="song-list"></div>
             </div>
             
-            <!-- Audio Player -->
-            <audio id="audio-player" preload="metadata"></audio>
         </div>
     </main>
     <script src="./index.js"></script>
