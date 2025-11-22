@@ -378,6 +378,7 @@ main{
     flex-shrink: 0;
     transition: transform 0.3s ease;
     cursor: pointer;
+    animation: discSpin 3s linear infinite;
 }
 
 .mini-poster:hover {
