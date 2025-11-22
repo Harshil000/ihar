@@ -230,16 +230,16 @@ updateNextImage();
 
 // Songs Array
 const songs = [
-    { poster: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop", songName: "Moonlight Serenade" },
-    { poster: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop", songName: "Love in the Air" },
-    { poster: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop", songName: "Hearts Collide" },
-    { poster: "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=200&h=200&fit=crop", songName: "Dreamy Nights" },
-    { poster: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=200&h=200&fit=crop", songName: "Sunset Romance" },
-    { poster: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=200&h=200&fit=crop", songName: "Sweet Melody" },
-    { poster: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=200&h=200&fit=crop", songName: "Forever Yours" },
-    { poster: "https://images.unsplash.com/photo-1446057032654-9d8885db76c6?w=200&h=200&fit=crop", songName: "Starlight Kiss" },
-    { poster: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=200&h=200&fit=crop", songName: "Dancing in Rain" },
-    { poster: "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=200&h=200&fit=crop", songName: "Endless Love" }
+    { poster: "./poster/poster1.jpg", songName: "Moonlight Serenade", audio: "./audio/audio1.m4a" },
+    { poster: "./poster/poster2.png", songName: "Love in the Air", audio: "./audio/audio2.m4a" },
+    { poster: "./poster/poster3.png", songName: "Hearts Collide", audio: "./audio/audio3.m4a" },
+    { poster: "./poster/poster4.png", songName: "Dreamy Nights", audio: "./audio/audio4.m4a" },
+    { poster: "./poster/poster5.png", songName: "Sunset Romance", audio: "./audio/audio5.m4a" },
+    { poster: "./poster/poster6.png", songName: "Sweet Melody", audio: "./audio/audio6.m4a" },
+    { poster: "./poster/poster7.png", songName: "Forever Yours", audio: "./audio/audio7.m4a" },
+    { poster: "./poster/poster8.jpg", songName: "Starlight Kiss", audio: "./audio/audio8.m4a" },
+    { poster: "./poster/poster9.jpg", songName: "Dancing in Rain", audio: "./audio/audio9.m4a" },
+    { poster: "./poster/poster10.jpg", songName: "Endless Love", audio: "./audio/audio10.m4a" }
 ];
 
 // Music Menu Elements
@@ -247,6 +247,14 @@ const musicDisc = document.getElementById('music-disc');
 const songMenu = document.getElementById('song-menu');
 const closeMenuBtn = document.getElementById('close-menu');
 const songList = document.getElementById('song-list');
+const audioPlayer = document.getElementById('audio-player');
+const discPoster = document.getElementById('disc-poster');
+const playPauseIcon = document.getElementById('play-pause-icon');
+const miniPlayer = document.querySelector('.mini-player');
+const miniPoster = document.getElementById('mini-poster');
+const miniSongName = document.getElementById('mini-song-name');
+let currentSongIndex = 0;
+let isPlaying = false;
 
 // Populate song list
 function populateSongList() {
@@ -260,39 +268,160 @@ function populateSongList() {
         `;
         
         songItem.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent event from reaching image-container
-            console.log(`Selected: ${song.songName}`);
-            // Add your song play logic here
+            e.stopPropagation();
+            
+            // Play selected song
+            playSong(index);
+            
+            // Close menu
             songMenu.classList.remove('show');
             songMenu.classList.add('hidden');
-            setTimeout(() => {
-                musicDisc.classList.remove('menu-open');
-            }, 600);
         });
         
         songList.appendChild(songItem);
     });
 }
 
-// Toggle song menu
+// Open song menu on disc click
 musicDisc.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent event from reaching image-container
+    e.stopPropagation();
+    
+    // Open menu
     songMenu.classList.remove('hidden');
     songMenu.classList.add('show');
-    musicDisc.classList.add('menu-open');
+});
+
+// Open song menu on mini player click
+miniPlayer.addEventListener('click', (e) => {
+    e.stopPropagation();
+    
+    // Open menu
+    songMenu.classList.remove('hidden');
+    songMenu.classList.add('show');
 });
 
 closeMenuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     songMenu.classList.remove('show');
     songMenu.classList.add('hidden');
-    setTimeout(() => {
-        musicDisc.classList.remove('menu-open');
-    }, 600);
+});
+
+// Music Control Functions
+function playSong(index) {
+    currentSongIndex = index;
+    const song = songs[index];
+    
+    audioPlayer.src = song.audio;
+    discPoster.src = song.poster;
+    miniPoster.src = song.poster;
+    miniSongName.textContent = song.songName;
+    
+    audioPlayer.play().then(() => {
+        isPlaying = true;
+        updatePlayPauseIcons('⏸️');
+        musicDisc.classList.add('playing');
+    }).catch(err => {
+        console.log('Playback prevented:', err);
+        isPlaying = false;
+        updatePlayPauseIcons('▶️');
+        musicDisc.classList.remove('playing');
+    });
+    
+    // Update active state in song list
+    updateActiveSong();
+}
+
+function togglePlayPause() {
+    if (isPlaying) {
+        audioPlayer.pause();
+        isPlaying = false;
+        updatePlayPauseIcons('▶️');
+        musicDisc.classList.remove('playing');
+    } else {
+        audioPlayer.play().then(() => {
+            isPlaying = true;
+            updatePlayPauseIcons('⏸️');
+            musicDisc.classList.add('playing');
+        }).catch(err => {
+            console.log('Playback failed:', err);
+        });
+    }
+}
+
+function updatePlayPauseIcons(icon) {
+    playPauseIcon.textContent = icon;
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    if (playPauseBtn) {
+        playPauseBtn.textContent = icon;
+    }
+}
+
+function playNextSong() {
+    // Play next song in queue
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    playSong(currentSongIndex);
+}
+
+function playPreviousSong() {
+    // Play previous song
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    playSong(currentSongIndex);
+}
+
+function updateActiveSong() {
+    const allSongItems = document.querySelectorAll('.song-item');
+    allSongItems.forEach((item, index) => {
+        if (index === currentSongIndex) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+// Auto-play next song when current ends
+audioPlayer.addEventListener('ended', playNextSong);
+
+// Control button event listeners
+const playPauseBtn = document.getElementById('play-pause-btn');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+
+playPauseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    togglePlayPause();
+});
+
+prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playPreviousSong();
+});
+
+nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playNextSong();
 });
 
 // Initialize song list
 populateSongList();
+
+// Set random song as ready (will play on first user interaction)
+const randomIndex = Math.floor(Math.random() * songs.length);
+currentSongIndex = randomIndex;
+audioPlayer.src = songs[randomIndex].audio;
+discPoster.src = songs[randomIndex].poster;
+miniPoster.src = songs[randomIndex].poster;
+miniSongName.textContent = songs[randomIndex].songName;
+updateActiveSong();
+
+// Auto-play on first user interaction with the page
+let hasStarted = false;
+document.addEventListener('click', () => {
+    if (!hasStarted && !isPlaying) {
+        hasStarted = true;
+        playSong(currentSongIndex);
+    }
+}, { once: true });
 
 // Romantic Overlay Logic
 const overlay = document.getElementById('romantic-overlay');

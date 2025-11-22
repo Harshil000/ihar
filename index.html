@@ -36,17 +36,38 @@
             
             <!-- Music Disc Button -->
             <div id="music-disc" class="music-disc">
-                <div class="disc-icon">🎵</div>
+                <img id="disc-poster" class="disc-poster" src="./poster/poster1.jpg" alt="Now Playing">
+                <div class="disc-overlay"></div>
+                <div class="disc-icon" id="play-pause-icon">▶️</div>
             </div>
         </div>
         
         <!-- Song Selector Menu -->
         <div id="song-menu" class="song-menu hidden">
-            <div class="song-menu-header">
-                <h2>🎶 Music Player</h2>
-                <button id="close-menu" class="close-menu-btn">&times;</button>
+            <!-- Mini Player (visible when menu is closed) -->
+            <div class="mini-player">
+                <img id="mini-poster" class="mini-poster" src="./poster/poster1.jpg" alt="Now Playing">
+                <div class="mini-info">
+                    <div id="mini-song-name" class="mini-song-name">Select a Song</div>
+                </div>
             </div>
-            <div id="song-list" class="song-list"></div>
+            
+            <!-- Full Menu Content (visible when menu is open) -->
+            <div class="menu-content">
+                <div class="song-menu-header">
+                    <h2>🎶 Music Player</h2>
+                    <div class="music-controls">
+                        <button id="prev-btn" class="control-btn">⏮️</button>
+                        <button id="play-pause-btn" class="control-btn play-pause-btn">▶️</button>
+                        <button id="next-btn" class="control-btn">⏭️</button>
+                    </div>
+                    <button id="close-menu" class="close-menu-btn">&times;</button>
+                </div>
+                <div id="song-list" class="song-list"></div>
+            </div>
+            
+            <!-- Audio Player -->
+            <audio id="audio-player" preload="metadata"></audio>
         </div>
     </main>
     <script src="./index.js"></script>

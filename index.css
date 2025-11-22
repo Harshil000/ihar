@@ -240,7 +240,33 @@ main{
     box-shadow: 0 8px 32px rgba(255, 20, 147, 0.3),
                 inset 0 0 20px rgba(255, 255, 255, 0.1);
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    animation: discSpin 8s linear infinite;
+    overflow: hidden;
+    position: relative;
+}
+
+.music-disc.playing {
+    animation: discSpin 3s linear infinite;
+    box-shadow: 0 12px 40px rgba(255, 20, 147, 0.6),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.disc-poster {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.disc-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .music-disc:hover {
@@ -248,6 +274,9 @@ main{
     background: rgba(255, 255, 255, 0.25);
     box-shadow: 0 12px 40px rgba(255, 20, 147, 0.5),
                 inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.music-disc:not(.playing):hover {
     animation-play-state: paused;
 }
 
@@ -255,14 +284,17 @@ main{
     transform: scale(1.05);
 }
 
-.music-disc.menu-open {
-    opacity: 0;
-    pointer-events: none;
-}
-
 .disc-icon {
     font-size: 1.8rem;
     filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.5));
+    z-index: 2;
+    position: relative;
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
+.disc-icon:hover {
+    transform: scale(1.2);
 }
 
 /* Song Menu */
@@ -270,17 +302,19 @@ main{
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 65px;
-    height: 65px;
-    background: rgba(255, 255, 255, 0.1);
+    width: 280px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(30px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 35px;
     box-shadow: 0 8px 32px rgba(255, 20, 147, 0.3);
     z-index: 101;
     transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     overflow: hidden;
-    pointer-events: none;
+    pointer-events: all;
+    display: flex;
+    align-items: center;
 }
 
 .song-menu.show {
@@ -295,57 +329,152 @@ main{
     box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4),
                 0 0 100px rgba(255, 20, 147, 0.3);
     pointer-events: all;
+    flex-direction: column;
 }
 
 .song-menu.hidden {
-    bottom: 30px;
-    right: 30px;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
+    width: 280px;
+    height: 70px;
+    border-radius: 35px;
+}
+
+/* Mini Player */
+.mini-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    width: 100%;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.song-menu.show .mini-player {
+    opacity: 0;
     pointer-events: none;
 }
 
+.mini-poster {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.mini-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.mini-song-name {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Menu Content */
+.menu-content {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.song-menu.show .menu-content {
+    display: flex;
+}
+
 .song-menu-header {
-    padding: 25px 30px;
+    padding: 20px 25px;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.3s ease 0.3s;
-}
-
-.song-menu.show .song-menu-header {
-    opacity: 1;
+    flex-direction: column;
+    gap: 15px;
+    flex-shrink: 0;
 }
 
 .song-menu-header h2 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 600;
     color: white;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin: 0;
+}
+
+.music-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.play-pause-btn {
+    width: 55px;
+    height: 55px;
+    font-size: 1.5rem;
+    background: rgba(255, 105, 180, 0.3);
+    border-color: rgba(255, 20, 147, 0.5);
+}
+
+.play-pause-btn:hover {
+    background: rgba(255, 105, 180, 0.5);
+    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.6);
 }
 
 .close-menu-btn {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
     line-height: 1;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    top: 15px;
+    right: 15px;
 }
 
 .close-menu-btn:hover {
@@ -362,8 +491,8 @@ main{
     transition: opacity 0.3s ease 0.3s;
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100% - 85px);
-    max-height: calc(80vh - 85px);
+    height: calc(100% - 120px);
+    max-height: calc(80vh - 120px);
 }
 
 /* Custom Scrollbar */
@@ -435,6 +564,18 @@ main{
 
 .song-item:active {
     transform: translateY(0) scale(0.98);
+}
+
+.song-item.active {
+    background: rgba(255, 105, 180, 0.3);
+    border-color: rgba(255, 20, 147, 0.8);
+    box-shadow: 0 8px 30px rgba(255, 20, 147, 0.5);
+}
+
+.song-item.active .song-poster {
+    animation: discSpin 3s linear infinite;
+    border-color: rgba(255, 20, 147, 0.8);
+    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.7);
 }
 
 .song-poster {
