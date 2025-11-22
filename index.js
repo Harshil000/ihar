@@ -81,7 +81,9 @@ let images = [
     {img : "image70.jpg"},
     {img : "image71.jpg"},
     {img : "image72.jpg"},
-    {img : "video10.mp4"}
+    {img : "video10.mp4"},
+    {img : "image73.jpg"},
+    {img : "image74.jpg"},
 ];
 
 const container = document.getElementById('image-container');
