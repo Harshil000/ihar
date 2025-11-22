@@ -7,28 +7,120 @@ let images = [
     {img : "image5.jpg"},
     {img : "image6.jpg"},
     {img : "image7.jpg"},
+    {img : "video1.mp4"},
     {img : "image8.jpg"},
     {img : "image9.jpg"},
     {img : "image10.jpg"},
     {img : "image11.jpg"},
     {img : "image12.jpg"},
+    {img : "video2.mp4"},
     {img : "image13.jpg"},
     {img : "image14.jpg"},
     {img : "image15.jpg"},
     {img : "image16.jpg"},
     {img : "image17.jpg"},
-    {img : "image18.jpg"}
+    {img : "image18.jpg"},
+    {img : "video3.mp4"},
+    {img : "image19.jpg"},
+    {img : "image20.jpg"},
+    {img : "image21.jpg"},
+    {img : "image22.jpg"},
+    {img : "image23.jpg"},
+    {img : "image24.jpg"},
+    {img : "image25.jpg"},
+    {img : "video4.mp4"},
+    {img : "image26.jpg"},
+    {img : "image27.jpg"},
+    {img : "image28.jpg"},
+    {img : "image29.jpg"},
+    {img : "image30.jpg"},
+    {img : "image31.jpg"},
+    {img : "video5.mp4"},
+    {img : "image32.jpg"},
+    {img : "image33.jpg"},
+    {img : "image34.jpg"},
+    {img : "image35.jpg"},
+    {img : "image36.jpg"},
+    {img : "image37.jpg"},
+    {img : "image38.jpg"},
+    {img : "video6.mp4"},
+    {img : "image39.jpg"},
+    {img : "image40.jpg"},
+    {img : "image41.jpg"},
+    {img : "image42.jpg"},
+    {img : "image43.jpg"},
+    {img : "image44.jpg"},
+    {img : "video7.mp4"},
+    {img : "image45.jpg"},
+    {img : "image46.jpg"},
+    {img : "image47.jpg"},
+    {img : "image48.jpg"},
+    {img : "image49.jpg"},
+    {img : "image50.jpg"},
+    {img : "image51.jpg"},
+    {img : "image52.jpg"},
+    {img : "image53.jpg"},
+    {img : "image54.jpg"},
+    {img : "image55.jpg"}
 ];
 
 const container = document.getElementById('image-container');
 const currentImage = document.querySelector('.current-image');
 const nextImage = document.querySelector('.next-image');
 const revealCursor = document.querySelector('.reveal-cursor');
+const currentVideo = document.querySelector('.current-video');
+const nextVideo = document.querySelector('.next-video');
+const currentBgVideo = document.querySelector('.current-bg-video');
+const nextBgVideo = document.querySelector('.next-bg-video');
 
 const revealSize = 200; // Size of the reveal heart
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
 let isAnimating = false; // Lock flag to prevent cursor tracking during animation
+
+// Helper function to check if file is a video
+function isVideo(filename) {
+    const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
+    return videoExtensions.some(ext => filename.toLowerCase().endsWith(ext));
+}
+
+// Helper function to set media (image or video)
+function setMedia(layer, videoElement, filename) {
+    const path = `./public/${filename}`;
+    const bgVideo = layer.querySelector('.bg-video');
+    
+    if (isVideo(filename)) {
+        // It's a video - play both background and foreground videos
+        layer.style.backgroundImage = 'none';
+        
+        // Background video (blurred)
+        if (bgVideo) {
+            bgVideo.src = path;
+            bgVideo.style.display = 'block';
+            bgVideo.load();
+            bgVideo.play().catch(err => console.log('Background video autoplay prevented:', err));
+        }
+        
+        // Foreground video (clear)
+        videoElement.src = path;
+        videoElement.style.display = 'block';
+        videoElement.load();
+        videoElement.play().catch(err => console.log('Video autoplay prevented:', err));
+    } else {
+        // It's an image
+        videoElement.style.display = 'none';
+        videoElement.pause();
+        videoElement.src = '';
+        
+        if (bgVideo) {
+            bgVideo.style.display = 'none';
+            bgVideo.pause();
+            bgVideo.src = '';
+        }
+        
+        layer.style.backgroundImage = `url('${path}')`;
+    }
+}
 
 // Helper function to create heart-shaped clip-path
 function getHeartClipPath(centerX, centerY, size) {
@@ -62,13 +154,13 @@ function getHeartClipPath(centerX, centerY, size) {
 // Update next image preview
 function updateNextImage() {
     const nextPosition = (position + 1) % images.length;
-    nextImage.style.backgroundImage = `url('./public/${images[nextPosition].img}')`;
+    setMedia(nextImage, nextVideo, images[nextPosition].img);
 }
 
 // Update previous image preview
 function updatePreviousImage() {
     const prevPosition = (position - 1 + images.length) % images.length;
-    nextImage.style.backgroundImage = `url('./public/${images[prevPosition].img}')`;
+    setMedia(nextImage, nextVideo, images[prevPosition].img);
 }
 
 // Mouse move handler
@@ -198,8 +290,8 @@ container.addEventListener('click', (e) => {
                 if(position < 0) position = images.length - 1;
             }
             
-            // Update current image to what was revealed
-            currentImage.style.backgroundImage = `url('./public/${images[position].img}')`;
+            // Update current media to what was revealed
+            setMedia(currentImage, currentVideo, images[position].img);
             
             // Update preview based on current mouse position
             const currentIsLeftHalf = mouseX < containerWidth / 2;
@@ -245,6 +337,7 @@ container.addEventListener('click', (e) => {
 });
 
 // Initialize
+setMedia(currentImage, currentVideo, images[position].img);
 updateNextImage();
 
 // Songs Array

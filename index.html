@@ -30,8 +30,14 @@
 
     <main>
         <div id="image-container">
-            <div class="image-layer current-image"></div>
-            <div class="image-layer next-image"></div>
+            <div class="image-layer current-image">
+                <video class="bg-video current-bg-video" loop muted playsinline style="display: none;"></video>
+                <video class="media-video current-video" loop muted playsinline style="display: none;"></video>
+            </div>
+            <div class="image-layer next-image">
+                <video class="bg-video next-bg-video" loop muted playsinline style="display: none;"></video>
+                <video class="media-video next-video" loop muted playsinline style="display: none;"></video>
+            </div>
             <div class="reveal-cursor"></div>
             
             <!-- Music Disc Button -->

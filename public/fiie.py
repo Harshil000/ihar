@@ -1,16 +1,36 @@
 import os
+import re
 
 def rename_images(folder_path):
-    # Allowed image extensions
     image_exts = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'}
 
     files = os.listdir(folder_path)
-    images = [f for f in files if os.path.splitext(f)[1].lower() in image_exts]
 
-    # Sort files alphabetically before renaming
-    images.sort()
+    # Detect already numbered images: image<number>.<ext>
+    pattern = re.compile(r"image(\d+)\.(jpg|jpeg|png|gif|webp|bmp)$", re.IGNORECASE)
+    
+    max_number = 0
+    unnumbered_images = []
 
-    for i, filename in enumerate(images, start=1):
+    for f in files:
+        name, ext = os.path.splitext(f)
+        ext_lower = ext.lower()
+
+        if ext_lower in image_exts:
+            match = pattern.match(f)
+            if match:
+                num = int(match.group(1))
+                max_number = max(max_number, num)
+            else:
+                unnumbered_images.append(f)
+
+    # Sort unnumbered images before renaming
+    unnumbered_images.sort()
+
+    # Start numbering from next available number
+    start = max_number + 1
+
+    for i, filename in enumerate(unnumbered_images, start=start):
         old_path = os.path.join(folder_path, filename)
         ext = os.path.splitext(filename)[1]
         new_name = f"image{i}{ext}"
@@ -19,8 +39,8 @@ def rename_images(folder_path):
         os.rename(old_path, new_path)
         print(f"Renamed: {filename}  →  {new_name}")
 
-    print("\nDone! All images renamed successfully.")
+    print("\nDone! All new images renamed successfully.")
 
-# Example usage:
+# Example:
 # rename_images("C:/Users/YourName/Desktop/photos")
 rename_images("./")
